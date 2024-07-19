@@ -68,24 +68,23 @@ if (canvas) {
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
-  // ------ MATERIALS ------
-
-  // --------------------------------------------------------------
-  // ------ GEOMETRIES ------
-  const sphereGeo = new THREE.SphereGeometry(1, 32, 32);
-  const planeGeo = new THREE.PlaneGeometry(20, 20);
 
   // --------------------------------------------------------------
   // ------ MESHES ------------------------------------------------
+
+  /**
+   *@name House
+   */
+
   const sphere = new THREE.Mesh(
-    sphereGeo,
+    new THREE.SphereGeometry(1, 32, 32),
     new THREE.MeshStandardMaterial({ roughness: 0.7 })
   );
   sphere.position.y = 2;
   scene.add(sphere);
 
   const floor = new THREE.Mesh(
-    planeGeo,
+    new THREE.PlaneGeometry(20, 20),
     new THREE.MeshStandardMaterial({ color: "#a9c388" })
   );
   floor.rotation.x = -Math.PI * 0.5; // this is -90deg
@@ -129,9 +128,9 @@ if (canvas) {
     100
   );
 
-  camera.position.z = 3;
-  camera.position.x = 1;
-  camera.position.y = 1;
+  camera.position.z = 12;
+  camera.position.x = 4;
+  camera.position.y = 4;
   scene.add(camera);
 
   const axHelp = new THREE.AxesHelper(4);
@@ -154,15 +153,6 @@ if (canvas) {
   // ---------------------------------------------------
   // renderer.shadowMap.enabled = true;
   renderer.shadowMap.enabled = false;
-
-  // shadow algorythms
-  //  BasicShadowMap  ---   perfoant but lousy quality
-  //  PCFShadowMap  ---smoother but less perfomant (default)
-  //  PCFSoftShadowMap  --- less perfomant but softer edges
-  //  VSMShadowMap  --- less perfomant, more constraints, can have unexpected results
-  // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  // renderer.shadowMap.type = THREE.VSMShadowMap;
-  // renderer.shadowMap.type = THREE.BasicShadowMap;
 
   // ---------------------------------------------------
   // ---------------------------------------------------
