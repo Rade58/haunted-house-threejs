@@ -43,29 +43,6 @@ if (canvas) {
 
   const textureLoader = new THREE.TextureLoader();
 
-  // ------  LIGHTS
-  // --------------------------------------------------------------------------------------
-  //---------------------------------------------------------------------------------------
-  //---------------------------------------------------------------------------------------
-  //---------------------------------------------------------------------------------------
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-
-  scene.add(ambientLight);
-
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-
-  directionalLight.position.set(2, 2, -1);
-
-  scene.add(directionalLight);
-
-  const directionalLightHelper = new THREE.DirectionalLightHelper(
-    directionalLight,
-    0.2,
-    "purple"
-  );
-  // scene.add(directionalLightHelper);
-
-  // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
@@ -142,11 +119,44 @@ if (canvas) {
 
   bush4.position.z = bush1.position.z - 0.2;
   bush4.position.x = bush1.position.x + 0.5;
-  bush4.position.y = bush3.position.y - 0.1;
+  bush4.position.y = bush3.position.y + 0.1;
 
   bush4.scale.setScalar(0.66);
 
   house.add(bush1, bush2, bush3, bush4);
+
+  const tombstones = new THREE.Group();
+
+  scene.add(tombstones);
+
+  const tombstoneGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.2);
+  const tombstoneMaterial = new THREE.MeshStandardMaterial({
+    color: "#b2b6b1",
+  });
+
+  for (let i = 0; i < 50; i++) {
+    const angle = Math.random() * Math.PI * 2; // random angle
+    const radiusMultiplier = 3 + Math.random() * 6; // random radius multiplier, but above 3 because half with of the walls is 2
+    // and lesser than a floor half width which is 10
+
+    const x = Math.cos(angle) * radiusMultiplier;
+    const z = Math.sin(angle) * radiusMultiplier;
+
+    const stone = new THREE.Mesh(tombstoneGeometry, tombstoneMaterial);
+
+    stone.position.set(x, 0.8 / 2 - 0.1, z);
+    // minus 0.5, because we want also negative calues
+    stone.rotation.z = (Math.random() - 0.5) * 0.4;
+    stone.rotation.y = (Math.random() - 0.5) * 0.4;
+
+    tombstones.add(stone);
+  }
+  // warm color for the light above house door
+  const doorLight = new THREE.PointLight("#ff7d46", 1, 7); // 7 is distance
+
+  doorLight.position.set(0, 2.2, 2.7);
+
+  house.add(doorLight);
 
   //----------------------------------------------------------------
 
@@ -171,6 +181,31 @@ if (canvas) {
 
   scene.add(floor);
 
+  // ------  AMBIENT AND DIRECTIONAL(Moon) LIGHTS
+  // --------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------------
+  const ambientLight = new THREE.AmbientLight("#b9d5ff", 0.12);
+
+  scene.add(ambientLight);
+
+  const moonLight = new THREE.DirectionalLight("#b9d5ff", 0.12);
+
+  // moonLight.position.set(2, 2, -1);
+  moonLight.position.set(4, 5, -2);
+
+  scene.add(moonLight);
+
+  const moonLightHelper = new THREE.DirectionalLightHelper(
+    moonLight,
+    0.2,
+    "purple"
+  );
+  // scene.add(moonLightHelper);
+
+  // -----------------------------------------------------------------------
+
   //  ---------------------- SHADOWS RELATED ----------------------
   // --------------------------------------------------------------
   // --------------------------------------------------------------
@@ -190,8 +225,33 @@ if (canvas) {
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
   //  gui
-  const lightsFolder = gui.addFolder("Lights");
+  const moonDirectionalLightFolder = gui.addFolder("Moon Light (Directional)");
+  moonDirectionalLightFolder
+    .add(moonLight, "intensity")
+    .min(0)
+    .max(1)
+    .step(0.001)
+    .name("MoonLight intensity");
+  moonDirectionalLightFolder
+    .add(moonLight.position, "x")
+    .min(-5)
+    .max(5)
+    .step(0.001)
+    .name("MoonLight x");
+  moonDirectionalLightFolder
+    .add(moonLight.position, "y")
+    .min(-5)
+    .max(5)
+    .step(0.001)
+    .name("MoonLight y");
+  moonDirectionalLightFolder
+    .add(moonLight.position, "z")
+    .min(-5)
+    .max(5)
+    .step(0.001)
+    .name("MoonLight z");
 
+  const doorPointLigtFolder = gui.addFolder("Door Point Light");
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
