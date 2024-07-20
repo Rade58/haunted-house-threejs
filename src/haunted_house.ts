@@ -37,7 +37,21 @@ const canvas: HTMLCanvasElement | null = document.querySelector("canvas.webgl");
 if (canvas) {
   // -------------------------------------------------------
 
+  //
   const scene = new THREE.Scene();
+  // defining FOG here. Right after the scene
+  /**
+   * @name Fog
+   */
+  const fog = new THREE.Fog("#262B37", 1, 15); // 1 and 15 are near and far
+  // near - how far from the camera fog starts (lower the value is more closer to the camera)
+  // far - how far from the camera will the fog be fully opaque
+
+  scene.fog = fog;
+  //
+  // but we will still see the edges of the floor mesh we placed down in the code
+  // we need to set up same clear color as the color of the fog
+  // we use setClearColor on the renderes, see down bellow what we did on the renderer
 
   // loading the shadow texture
 
@@ -48,7 +62,7 @@ if (canvas) {
   // -----------------------------------------------------------------------
 
   // --------------------------------------------------------------
-  // ------ MESHES ------------------------------------------------
+  // --------------------------------------------------------------
 
   /**
    *@name House ----------------------------------------------------
@@ -181,6 +195,8 @@ if (canvas) {
 
   scene.add(floor);
 
+  //---------------------------------------------------------------
+
   // ------  AMBIENT AND DIRECTIONAL(Moon) LIGHTS
   // --------------------------------------------------------------------------------------
   //---------------------------------------------------------------------------------------
@@ -283,6 +299,9 @@ if (canvas) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
   });
+
+  // same clear color as the fog
+  renderer.setClearColor("#262B37");
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // more than 2 is unnecessary
 
