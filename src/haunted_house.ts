@@ -81,7 +81,11 @@ if (canvas) {
     new THREE.MeshStandardMaterial({ roughness: 0.7 })
   );
   sphere.position.y = 2;
-  scene.add(sphere);
+  // scene.add(sphere);
+
+  /**
+   * @name Ground
+   */
 
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20, 20),
