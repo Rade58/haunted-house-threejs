@@ -69,6 +69,7 @@ if (canvas) {
   const doorRoughnessTexture = textureLoader.load(
     "/textures/door/roughness.jpg"
   );
+
   // wall
   const wallColorTexture = textureLoader.load("/textures/bricks/basecolor.jpg");
   const wallAlphaTexture = textureLoader.load("/textures/bricks/alpha.jpg");
@@ -82,7 +83,60 @@ if (canvas) {
   const wallRougnessTexture = textureLoader.load(
     "/textures/bricks/roughness.jpg"
   );
-  const wallHeightTexture = textureLoader.load("/textures/bricks/height.png");
+  // const wallHeightTexture = textureLoader.load("/textures/bricks/height.png");
+
+  // roof (textures look bad on the cone)
+  const roofColorTexture = textureLoader.load("/textures/roof/basecolor.jpg");
+  const roofAmbientOcclusionTexture = textureLoader.load(
+    "/textures/roof/ambientOcclusion.jpg"
+  );
+  const roofNormalTexture = textureLoader.load("/textures/roof/normal.jpg");
+  const roofRoughnessTexture = textureLoader.load(
+    "/textures/roof/roughness.jpg"
+  );
+  const roofHeightTexture = textureLoader.load("/textures/roof/height.jpg");
+
+  const grassBaseColorTexture = textureLoader.load(
+    "/textures/grass/BaseColor.jpg"
+  );
+  const grassAmbientOcclusionTexture = textureLoader.load(
+    "/textures/grass/AmbientOcclusion.jpg"
+  );
+  // const grassHeightTexture = textureLoader.load("/textures/grass/Height.png");
+  const grassNormalTexture = textureLoader.load("/textures/grass/Normal.jpg");
+  const grassRoughnessTexture = textureLoader.load(
+    "/textures/grass/Roughness.jpg"
+  );
+
+  grassBaseColorTexture.repeat.set(6, 6);
+  grassAmbientOcclusionTexture.repeat.set(6, 6);
+  grassNormalTexture.repeat.set(6, 6);
+  grassRoughnessTexture.repeat.set(6, 6);
+
+  grassBaseColorTexture.wrapS = THREE.RepeatWrapping;
+  grassAmbientOcclusionTexture.wrapS = THREE.RepeatWrapping;
+  grassNormalTexture.wrapS = THREE.RepeatWrapping;
+  grassRoughnessTexture.wrapS = THREE.RepeatWrapping;
+
+  grassBaseColorTexture.wrapT = THREE.RepeatWrapping;
+  grassAmbientOcclusionTexture.wrapT = THREE.RepeatWrapping;
+  grassNormalTexture.wrapT = THREE.RepeatWrapping;
+  grassRoughnessTexture.wrapT = THREE.RepeatWrapping;
+
+  /* roofColorTexture.repeat.set(3, 3);
+  roofAmbientOcclusionTexture.repeat.set(3, 3);
+  roofNormalTexture.repeat.set(3, 3);
+  roofRoughnessTexture.repeat.set(3, 3);
+
+  roofColorTexture.wrapS = THREE.RepeatWrapping;
+  roofAmbientOcclusionTexture.wrapS = THREE.RepeatWrapping;
+  roofNormalTexture.wrapS = THREE.RepeatWrapping;
+  roofRoughnessTexture.wrapS = THREE.RepeatWrapping;
+
+  roofColorTexture.wrapT = THREE.RepeatWrapping;
+  roofAmbientOcclusionTexture.wrapT = THREE.RepeatWrapping;
+  roofNormalTexture.wrapT = THREE.RepeatWrapping;
+  roofRoughnessTexture.wrapT = THREE.RepeatWrapping; */
 
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
@@ -116,21 +170,30 @@ if (canvas) {
     })
   );
 
-  // we don't need this, these are vertices for displacement
-  /* walls.geometry.setAttribute(
+  // for ambient Occlusion
+  walls.geometry.setAttribute(
     "uv2",
     new THREE.Float32BufferAttribute(walls.geometry.attributes.uv.array, 2) // 2 coordinates for uv2
-  ); */
+  );
 
   walls.position.y = 2.5 / 2;
   house.add(walls);
 
   const roof = new THREE.Mesh(
-    new THREE.ConeGeometry(3.2, 1.5, 4), // 4 segments means pyramid with 4 sides
+    new THREE.ConeGeometry(3.5, 1, 4, 50), // 4 segments means pyramid with 4 sides
+
     new THREE.MeshStandardMaterial({ color: "#b35f45" })
+    // no because we re using cone and textures look bad
+    /* new THREE.MeshStandardMaterial({
+      map: roofColorTexture,
+      aoMap: roofAmbientOcclusionTexture,
+      normalMap: roofNormalTexture,
+      roughnessMap: roofRoughnessTexture,
+      displacementMap: roofHeightTexture,
+    }) */
   );
 
-  roof.position.y = 2.5 + 1.5 / 2; // 2.5 is height of the walls, and 1.5 is height of the roof
+  roof.position.y = 2.5 + 1 / 2; // 2.5 is height of the walls, and 1 is height of the roof
 
   roof.rotation.y = Math.PI * (1 / 4); // rotate it by 45 deg to align it with walls
 
@@ -156,7 +219,7 @@ if (canvas) {
     })
   );
 
-  // for height map (displacement) we ned to do this, to set new attribute uv2
+  // for ambientOcclusion we ned to do this, to set new attribute uv2
   door.geometry.setAttribute(
     "uv2",
     new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2) // 2 coordinates for uv2
@@ -257,8 +320,21 @@ if (canvas) {
 
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20, 20),
-    new THREE.MeshStandardMaterial({ color: "#a9c388" })
+    // new THREE.MeshStandardMaterial({ color: "#a9c388" })
+    new THREE.MeshStandardMaterial({
+      map: grassBaseColorTexture,
+      aoMap: grassAmbientOcclusionTexture,
+      // displacementMap: grassHeightTexture,
+      normalMap: grassNormalTexture,
+      roughnessMap: grassRoughnessTexture,
+    })
   );
+
+  floor.geometry.setAttribute(
+    "uv2",
+    new THREE.Float32BufferAttribute(floor.geometry.attributes.uv.array, 2) // 2 coordinates for uv2
+  );
+
   floor.rotation.x = -Math.PI * 0.5; // this is -90deg
   // floor.position.y = -0.65;
   floor.position.y = 0;
