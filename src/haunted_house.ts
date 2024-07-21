@@ -53,9 +53,36 @@ if (canvas) {
   // we need to set up same clear color as the color of the fog
   // we use setClearColor on the renderes, see down bellow what we did on the renderer
 
-  // loading the shadow texture
-
   const textureLoader = new THREE.TextureLoader();
+
+  // door
+  const doorColorTexture = textureLoader.load("/textures/door/basecolor.jpg");
+  const doorAlphaTexture = textureLoader.load("/textures/door/alpha.jpg");
+  const doorAmbientOcTexture = textureLoader.load(
+    "/textures/door/ambientOcclusion.jpg"
+  );
+  const doorHeightTexture = textureLoader.load("/textures/door/height.png");
+  const doorNormalTexture = textureLoader.load("/textures/door/normal.jpg");
+  const doorMetalnessTexture = textureLoader.load(
+    "/textures/door/metalness.jpg"
+  );
+  const doorRoughnessTexture = textureLoader.load(
+    "/textures/door/roughness.jpg"
+  );
+  // wall
+  const wallColorTexture = textureLoader.load("/textures/bricks/basecolor.jpg");
+  const wallAlphaTexture = textureLoader.load("/textures/bricks/alpha.jpg");
+  const wallAmbietOcclusionTexture = textureLoader.load(
+    "/textures/bricks/ambientOcclusion.jpg"
+  );
+  const wallNormalTexture = textureLoader.load("/textures/bricks/normal.jpg");
+  const wallMetalnessTexture = textureLoader.load(
+    "/textures/bricks/metalness.jpg"
+  );
+  const wallRougnessTexture = textureLoader.load(
+    "/textures/bricks/roughness.jpg"
+  );
+  const wallHeightTexture = textureLoader.load("/textures/bricks/height.png");
 
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
@@ -71,9 +98,30 @@ if (canvas) {
   scene.add(house);
 
   const walls = new THREE.Mesh(
-    new THREE.BoxGeometry(4, 2.5, 4),
-    new THREE.MeshStandardMaterial({ color: "#ac8e82" })
+    new THREE.BoxGeometry(4, 2.5, 4 /* , 10, 10 */), // don't need much segments in this case
+    // new THREE.MeshStandardMaterial({ color: "#ac8e82" })
+    new THREE.MeshStandardMaterial({
+      map: wallColorTexture,
+      // we don't need this
+      // transparent: true,
+      alphaMap: wallAlphaTexture,
+      aoMap: wallAmbietOcclusionTexture,
+      // we don't need these I think, this would only be usefull if wall is just a plane
+      // displacementMap: wallHeightTexture,
+      // displacementScale: 0.4, // try uncommenting setting it , the brick will be more real because vertices but edges would be moved
+      //                                      and it would be like walls are moved
+      normalMap: wallNormalTexture,
+      metalnessMap: wallMetalnessTexture,
+      roughnessMap: wallRougnessTexture,
+    })
   );
+
+  // we don't need this, these are vertices for displacement
+  /* walls.geometry.setAttribute(
+    "uv2",
+    new THREE.Float32BufferAttribute(walls.geometry.attributes.uv.array, 2) // 2 coordinates for uv2
+  ); */
+
   walls.position.y = 2.5 / 2;
   house.add(walls);
 
@@ -89,9 +137,31 @@ if (canvas) {
   house.add(roof);
 
   const door = new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 2),
-    new THREE.MeshStandardMaterial({ color: "#aa7b7b" })
+    new THREE.PlaneGeometry(2, 2, 100, 100),
+    // new THREE.MeshStandardMaterial({ color: "#aa7b7b" })
+    new THREE.MeshStandardMaterial({
+      map: doorColorTexture,
+      transparent: true, // if we want to use alpha map in this case we enable this whe nwe want the black color on the alpha Texture to be transparent
+      alphaMap: doorAlphaTexture,
+      aoMap: doorAmbientOcTexture,
+      displacementMap: doorHeightTexture,
+      // to see all vertices
+      // wireframe: true,
+      //
+      displacementScale: 0.1, // without this, our segment will cause our door to look "too extruded" (my words)
+
+      normalMap: doorNormalTexture,
+      metalnessMap: doorMetalnessTexture,
+      roughnessMap: doorRoughnessTexture,
+    })
   );
+
+  // for height map (displacement) we ned to do this, to set new attribute uv2
+  door.geometry.setAttribute(
+    "uv2",
+    new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2) // 2 coordinates for uv2
+  );
+
   // half of the dept of the walls, but we need to add some extra because we have a problem where door
   // and the wall are over eachother so we need to add some valu to move door a bit from the wall
   // problem is called ZED FIGHTING
@@ -166,7 +236,7 @@ if (canvas) {
     tombstones.add(stone);
   }
   // warm color for the light above house door
-  const doorLight = new THREE.PointLight("#ff7d46", 1, 7); // 7 is distance
+  const doorLight = new THREE.PointLight("#ff7d46", 1, 7); // 7 is distance, increse it and it is like "incresing radius" of light
 
   doorLight.position.set(0, 2.2, 2.7);
 
@@ -268,6 +338,13 @@ if (canvas) {
     .name("MoonLight z");
 
   const doorPointLigtFolder = gui.addFolder("Door Point Light");
+
+  doorPointLigtFolder
+    .add(doorLight, "distance")
+    .min(0)
+    .max(10)
+    .step(0.001)
+    .name("door light distance (point light distance)");
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
