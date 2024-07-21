@@ -506,6 +506,7 @@ if (canvas) {
   // ---------------------------------------------------
   renderer.shadowMap.enabled = true;
   // renderer.shadowMap.enabled = false;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
 
   // ---------------------------------------------------
   // ---------------------------------------------------
