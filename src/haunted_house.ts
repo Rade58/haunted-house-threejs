@@ -196,7 +196,7 @@ if (canvas) {
   roof.position.y = 2.5 + 1 / 2; // 2.5 is height of the walls, and 1 is height of the roof
 
   roof.rotation.y = Math.PI * (1 / 4); // rotate it by 45 deg to align it with walls
-
+  //
   house.add(roof);
 
   const door = new THREE.Mesh(
