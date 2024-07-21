@@ -15,7 +15,7 @@ const gui = new GUI({
   closeFolders: false,
 });
 
-// gui.hide();
+gui.hide();
 
 /* 
 const debugObject = {
@@ -108,10 +108,10 @@ if (canvas) {
     "/textures/grass/Roughness.jpg"
   );
 
-  grassBaseColorTexture.repeat.set(6, 6);
-  grassAmbientOcclusionTexture.repeat.set(6, 6);
-  grassNormalTexture.repeat.set(6, 6);
-  grassRoughnessTexture.repeat.set(6, 6);
+  grassBaseColorTexture.repeat.set(26, 26);
+  grassAmbientOcclusionTexture.repeat.set(26, 26);
+  grassNormalTexture.repeat.set(26, 26);
+  grassRoughnessTexture.repeat.set(26, 26);
 
   grassBaseColorTexture.wrapS = THREE.RepeatWrapping;
   grassAmbientOcclusionTexture.wrapS = THREE.RepeatWrapping;
@@ -177,6 +177,9 @@ if (canvas) {
   );
 
   walls.position.y = 2.5 / 2;
+
+  walls.castShadow = true;
+
   house.add(walls);
 
   const roof = new THREE.Mesh(
@@ -270,6 +273,11 @@ if (canvas) {
 
   bush4.scale.setScalar(0.66);
 
+  bush1.castShadow = true;
+  bush2.castShadow = true;
+  bush3.castShadow = true;
+  bush4.castShadow = true;
+
   house.add(bush1, bush2, bush3, bush4);
 
   const tombstones = new THREE.Group();
@@ -296,6 +304,8 @@ if (canvas) {
     stone.rotation.z = (Math.random() - 0.5) * 0.4;
     stone.rotation.y = (Math.random() - 0.5) * 0.4;
 
+    stone.castShadow = true;
+
     tombstones.add(stone);
   }
   // warm color for the light above house door
@@ -303,10 +313,24 @@ if (canvas) {
 
   doorLight.position.set(0, 2.2, 2.7);
 
+  doorLight.castShadow = true;
+
   house.add(doorLight);
 
-  //----------------------------------------------------------------
+  //--------------------------------------------------------------------
+  /**
+   * @name Ghosts
+   */
+  const ghost1 = new THREE.PointLight("#ff00ff", 2, 3);
+  const ghost2 = new THREE.PointLight("#00ffff", 2, 3);
+  const ghost3 = new THREE.PointLight("#ffff00", 2, 3);
 
+  ghost1.castShadow = true;
+  ghost2.castShadow = true;
+  ghost3.castShadow = true;
+
+  scene.add(ghost1, ghost2, ghost3);
+  // ---------------------------------------------------------------------
   // const sphere = new THREE.Mesh(
   //   new THREE.SphereGeometry(1, 32, 32),
   //   new THREE.MeshStandardMaterial({ roughness: 0.7 })
@@ -319,7 +343,7 @@ if (canvas) {
    */
 
   const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 20),
+    new THREE.PlaneGeometry(200, 200),
     // new THREE.MeshStandardMaterial({ color: "#a9c388" })
     new THREE.MeshStandardMaterial({
       map: grassBaseColorTexture,
@@ -339,6 +363,8 @@ if (canvas) {
   // floor.position.y = -0.65;
   floor.position.y = 0;
 
+  floor.receiveShadow = true;
+
   scene.add(floor);
 
   //---------------------------------------------------------------
@@ -356,6 +382,8 @@ if (canvas) {
 
   // moonLight.position.set(2, 2, -1);
   moonLight.position.set(4, 5, -2);
+
+  moonLight.castShadow = true;
 
   scene.add(moonLight);
 
@@ -436,14 +464,14 @@ if (canvas) {
     100
   );
 
-  camera.position.z = 12;
+  camera.position.z = 10;
   camera.position.x = 4;
   camera.position.y = 4;
   scene.add(camera);
 
   const axHelp = new THREE.AxesHelper(4);
   axHelp.setColors("red", "green", "blue");
-  scene.add(axHelp);
+  // scene.add(axHelp);
 
   const orbit_controls = new OrbitControls(camera, canvas);
   // orbit_controls.enabled = false
@@ -462,8 +490,8 @@ if (canvas) {
   // ---------------------------------------------------
   // ---------------------------------------------------
   // ---------------------------------------------------
-  // renderer.shadowMap.enabled = true;
-  renderer.shadowMap.enabled = false;
+  renderer.shadowMap.enabled = true;
+  // renderer.shadowMap.enabled = false;
 
   // ---------------------------------------------------
   // ---------------------------------------------------
@@ -491,6 +519,22 @@ if (canvas) {
   const clock = new THREE.Clock();
   const tick = () => {
     const elapsedTime = clock.getElapsedTime();
+
+    // moving ghosts
+    const ghostAngle = elapsedTime * 0.5;
+    ghost1.position.x = Math.cos(ghostAngle) * 4;
+    ghost1.position.y = Math.sin(ghostAngle) * 4;
+    ghost1.position.z = Math.sin(elapsedTime * 3);
+    const ghost2Angle = -elapsedTime * 0.32;
+    ghost2.position.x = Math.cos(ghost2Angle) * 5;
+    ghost2.position.y = Math.sin(ghost2Angle) * 5;
+    ghost2.position.z = Math.sin(elapsedTime * 4) + Math.sin(elapsedTime * 2.5);
+    const ghost3Angle = -elapsedTime * 0.18;
+    ghost3.position.x =
+      Math.cos(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.32));
+    ghost3.position.y =
+      Math.sin(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.5));
+    ghost3.position.z = Math.sin(elapsedTime * 5) + Math.sin(elapsedTime * 2);
 
     // for dumping to work
     orbit_controls.update();
